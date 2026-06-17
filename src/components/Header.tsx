@@ -4,12 +4,12 @@ function Header() {
   return (
     <Group justify="space-between" align="flex-start" mb="xl">
       <div>
-        <Title order={1}>North East England</Title>
+        <Title order={1}>North East vs London</Title>
         <Title order={2} c="dimmed">
-          Public Spending & Knife Crime Dashboard
+          Public Spending & Knife Crime Comparison
         </Title>
         <Text c="dimmed" mt="xs">
-          CRA 2025 Spending Data • Knife & Offensive Weapon Sentencing 2014-2024
+          2024-25 Government Spending (CRA 2025) &bull; 2024 Knife Crime Rates
         </Text>
       </div>
     </Group>

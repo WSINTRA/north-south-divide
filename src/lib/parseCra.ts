@@ -7,7 +7,7 @@ const parseSpendValue = (raw: string): number => {
 };
 
 export const parseCraCsv = (csv: string): CraRow[] => {
-  const result = Papa.parse<CraRow>(csv, {
+  const result = Papa.parse<Record<string, string>>(csv, {
     header: true,
     dynamicTyping: false,
     skipEmptyLines: true,
@@ -33,10 +33,6 @@ export const parseCraCsv = (csv: string): CraRow[] => {
     allocatedBy: (row['Allocated by HMT or DEPT'] ?? 'DEPT') as 'HMT' | 'DEPT',
     itlRegion: row['ITL Region'] ?? '',
     country: row['Country'] ?? '',
-    spend2020_21: parseSpendValue(row['2020-21'] ?? '0'),
-    spend2021_22: parseSpendValue(row['2021-22'] ?? '0'),
-    spend2022_23: parseSpendValue(row['2022-23'] ?? '0'),
-    spend2023_24: parseSpendValue(row['2023-24'] ?? '0'),
     spend2024_25: parseSpendValue(row['2024-25'] ?? '0'),
   }));
 };

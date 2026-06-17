@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
-import { buildDashboardData } from '../lib/aggregate';
-import { NE_FORCES, NE_REGION } from '../lib/constants';
-import { filterByRegion, parseCraCsv } from '../lib/parseCra';
-import { extractForces, parseCrimeCsv } from '../lib/parseCrime';
 import type { DashboardData } from '../types';
+import { buildDashboardData } from './aggregate';
+import {
+  LONDON_FORCES,
+  LONDON_POPULATION,
+  LONDON_REGION,
+  NE_FORCES,
+  NE_POPULATION,
+  NE_REGION,
+} from './constants';
+import { filterByRegion, parseCraCsv } from './parseCra';
+import { extractForces, parseCrimeCsv } from './parseCrime';
 
 const useDashboardData = () => {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -31,14 +38,20 @@ const useDashboardData = () => {
 
         const craRows = parseCraCsv(craCsv);
         const neRows = filterByRegion(craRows, NE_REGION);
+        const londonRows = filterByRegion(craRows, LONDON_REGION);
 
         const crimeRows = parseCrimeCsv(crimeCsv);
         const neForces = extractForces(crimeRows, NE_FORCES);
+        const londonForces = extractForces(crimeRows, LONDON_FORCES);
 
-        const dashboardData = buildDashboardData(neRows, [
-          ...neForces,
-          ...crimeRows.filter((r) => r.policeForce === 'England and Wales'),
-        ]);
+        const dashboardData = buildDashboardData(
+          neRows,
+          londonRows,
+          neForces,
+          londonForces,
+          NE_POPULATION,
+          LONDON_POPULATION,
+        );
         setData(dashboardData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');

@@ -1,118 +1,125 @@
 import { describe, expect, it } from 'vitest';
-import type { CraRow } from '../types';
-import {
-  aggregateByCofog,
-  aggregateBySector,
-  aggregateByYear,
-  aggregateCapCur,
-  aggregateIdNonId,
-} from './aggregate';
+import type { CraRow, CrimeRow } from '../types';
+import { buildDashboardData } from './aggregate';
 
-const sampleRows: CraRow[] = [
-  {
-    departmentName: 'Home Office',
-    organisationName: 'Home Office',
-    craSegmentCode: 'SEG001',
-    craSegmentName: 'Police',
-    cofogLevel0: '3. Public order and safety',
-    hmtFunction: '3. Public order and safety',
-    cofogLevel1: '3.1 Police',
-    hmtSubfunction: '3.1 Police',
-    idNonId: 'ID',
-    capOrCur: 'CAP',
-    sector: 'CG',
-    allocatedBy: 'DEPT',
-    itlRegion: 'ENGLAND_North East',
-    country: 'ENGLAND',
-    spend2020_21: 100_000_000,
-    spend2021_22: 110_000_000,
-    spend2022_23: 120_000_000,
-    spend2023_24: 130_000_000,
-    spend2024_25: 140_000_000,
-  },
-  {
-    departmentName: 'DHSC',
-    organisationName: 'NHS',
-    craSegmentCode: 'SEG002',
-    craSegmentName: 'Health',
-    cofogLevel0: '7. Health',
-    hmtFunction: '7. Health',
-    cofogLevel1: '7.1 Medical',
-    hmtSubfunction: '7.1 Medical',
-    idNonId: 'ID',
-    capOrCur: 'CUR',
-    sector: 'LG',
-    allocatedBy: 'DEPT',
-    itlRegion: 'ENGLAND_North East',
-    country: 'ENGLAND',
-    spend2020_21: 50_000_000,
-    spend2021_22: 55_000_000,
-    spend2022_23: 60_000_000,
-    spend2023_24: 65_000_000,
-    spend2024_25: 70_000_000,
-  },
-  {
-    departmentName: 'DfE',
-    organisationName: 'DfE',
-    craSegmentCode: 'SEG003',
-    craSegmentName: 'Education',
-    cofogLevel0: '9. Education',
-    hmtFunction: '9. Education',
-    cofogLevel1: '9.1 Primary',
-    hmtSubfunction: '9.1 Primary',
-    idNonId: 'Non-ID',
-    capOrCur: 'CUR',
-    sector: 'CG',
-    allocatedBy: 'HMT',
-    itlRegion: 'ENGLAND_North East',
-    country: 'ENGLAND',
-    spend2020_21: 200_000_000,
-    spend2021_22: 210_000_000,
-    spend2022_23: 220_000_000,
-    spend2023_24: 230_000_000,
-    spend2024_25: 240_000_000,
-  },
-];
+const makeCraRow = (
+  region: string,
+  cofog: string,
+  sector: 'CG' | 'LG' | 'PC',
+  spend: number,
+  capOrCur: 'CAP' | 'CUR' = 'CUR',
+  idNonId: 'ID' | 'Non-ID' = 'ID',
+): CraRow => ({
+  departmentName: 'Test',
+  organisationName: 'Test',
+  craSegmentCode: 'TEST',
+  craSegmentName: 'Test',
+  cofogLevel0: cofog,
+  hmtFunction: cofog,
+  cofogLevel1: '1.1 Test',
+  hmtSubfunction: '1.1 Test',
+  idNonId,
+  capOrCur,
+  sector,
+  allocatedBy: 'HMT',
+  itlRegion: region,
+  country: 'ENGLAND',
+  spend2024_25: spend,
+});
 
-describe('aggregateByCofog', () => {
-  it('groups spending by COFOG Level 0 category', () => {
-    const result = aggregateByCofog(sampleRows);
-    expect(result).toHaveLength(3);
-    const justice = result.find(
-      (r) => r.cofogLevel0 === '3. Public order and safety',
+const makeCrimeRow = (
+  force: string,
+  offences: number,
+  rate: number,
+): CrimeRow => ({
+  policeForce: force,
+  offences2024: offences,
+  rate2024: rate,
+});
+
+describe('buildDashboardData', () => {
+  const neRows = [
+    makeCraRow('ENGLAND_North East', '7. Health', 'CG', 100_000),
+    makeCraRow(
+      'ENGLAND_North East',
+      '1. General public services',
+      'LG',
+      50_000,
+      'CAP',
+    ),
+    makeCraRow('ENGLAND_North East', '3. Defence', 'CG', 30_000),
+  ];
+  const londonRows = [
+    makeCraRow('ENGLAND_London', '7. Health', 'CG', 200_000),
+    makeCraRow(
+      'ENGLAND_London',
+      '1. General public services',
+      'LG',
+      80_000,
+      'CAP',
+    ),
+    makeCraRow('ENGLAND_London', '3. Defence', 'CG', 60_000),
+  ];
+  const neCrime = [
+    makeCrimeRow('Northumbria', 608, 46),
+    makeCrimeRow('Cleveland', 386, 74),
+    makeCrimeRow('Durham', 220, 38),
+  ];
+  const londonCrime = [
+    makeCrimeRow('Metropolitan Police', 3783, 48),
+    makeCrimeRow('City of London', 36, 0),
+  ];
+
+  const data = buildDashboardData(
+    neRows,
+    londonRows,
+    neCrime,
+    londonCrime,
+    2_700_000,
+    8_800_000,
+  );
+
+  it('calculates total spend for each region', () => {
+    expect(data.ne.spend.total).toBe(180_000);
+    expect(data.london.spend.total).toBe(340_000);
+  });
+
+  it('calculates per capita spend', () => {
+    expect(data.ne.spend.perCapita).toBe(Math.round(180_000 / 2_700_000));
+    expect(data.london.spend.perCapita).toBe(Math.round(340_000 / 8_800_000));
+  });
+
+  it('aggregates spend by category', () => {
+    expect(data.ne.spend.byCategory).toHaveLength(3);
+    const health = data.ne.spend.byCategory.find(
+      (c) => c.category === 'Health',
     );
-    expect(justice?.total).toBe(600_000_000);
+    expect(health?.spend).toBe(100_000);
   });
-});
 
-describe('aggregateByYear', () => {
-  it('sums total spending by year', () => {
-    const result = aggregateByYear(sampleRows);
-    expect(result['2020-21']).toBe(350_000_000);
-    expect(result['2024-25']).toBe(450_000_000);
+  it('splits capital vs current spend', () => {
+    expect(data.ne.spend.cap).toBe(50_000);
+    expect(data.ne.spend.cur).toBe(130_000);
   });
-});
 
-describe('aggregateCapCur', () => {
-  it('splits spending into capital and current', () => {
-    const result = aggregateCapCur(sampleRows);
-    expect(result['2020-21'].cap).toBe(100_000_000);
-    expect(result['2020-21'].cur).toBe(250_000_000);
+  it('splits identifiable vs non-identifiable spend', () => {
+    expect(data.ne.spend.id).toBe(180_000);
+    expect(data.ne.spend.nonId).toBe(0);
   });
-});
 
-describe('aggregateIdNonId', () => {
-  it('splits spending into identifiable and non-identifiable', () => {
-    const result = aggregateIdNonId(sampleRows);
-    expect(result.id).toBe(900_000_000);
-    expect(result.nonId).toBe(1_100_000_000);
+  it('aggregates crime data for each region', () => {
+    expect(data.ne.crime.totalOffences).toBe(608 + 386 + 220);
+    expect(data.ne.crime.ratePer100k).toBe(46 + 74 + 38);
+    expect(data.ne.crime.byForce).toHaveLength(3);
   });
-});
 
-describe('aggregateBySector', () => {
-  it('groups spending by sector', () => {
-    const result = aggregateBySector(sampleRows);
-    expect(result['CG']).toBe(1_700_000_000);
-    expect(result['LG']).toBe(300_000_000);
+  it('calculates justice spend correctly', () => {
+    expect(data.ne.spend.justiceSpend).toBe(30_000);
+    expect(data.london.spend.justiceSpend).toBe(60_000);
+  });
+
+  it('aggregates spend by sector', () => {
+    expect(data.ne.spend.bySector['CG']).toBe(130_000);
+    expect(data.ne.spend.bySector['LG']).toBe(50_000);
   });
 });

@@ -1,74 +1,104 @@
 import { Container, Paper, SimpleGrid, Text, Title } from '@mantine/core';
-import CapVsCurChart from './components/CapVsCurChart';
-import CrimeTrendChart from './components/CrimeTrendChart';
+
+import {
+  DEFAULT_THEME,
+  MantineProvider,
+  createTheme,
+  mergeMantineTheme,
+} from '@mantine/core';
+
+import CapVsCurComparison from './components/CapVsCurComparison';
+import CategoryComparison from './components/CategoryComparison';
+import Conclusion from './components/Conclusion';
+import CrimeComparison from './components/CrimeComparison';
+import D3ComparisonChart from './components/D3ComparisonChart';
+import D3DonutChart from './components/D3DonutChart';
 import Header from './components/Header';
-import IdVsNonIdChart from './components/IdVsNonIdChart';
-import JusticeVsCrimeChart from './components/JusticeVsCrimeChart';
-import MapChart from './components/MapChart';
-import SectorChart from './components/SectorChart';
-import SpendCategoryChart from './components/SpendCategoryChart';
+import PerCapitaComparison from './components/PerCapitaComparison';
+import SectorComparison from './components/SectorComparison';
+import Summary from './components/Summary';
+import '@mantine/core/styles.css';
+import '@mantine/charts/styles.css';
+const themeOverride = createTheme({
+  primaryColor: 'blue',
+  headings: { fontWeight: '600' },
+});
+const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
 
 function App() {
   return (
-    <Container size="xl" py="xl">
-      <Header />
+    <MantineProvider theme={theme} forceColorScheme="dark">
+      <Container size="xl" py="xl">
+        <Header />
+        <Summary />
 
-      <Text size="sm" c="dimmed" mb="md">
-        Data: CRA 2025 (ONS) • Knife & Offensive Weapon Sentencing (Ministry of
-        Justice)
-      </Text>
+        <Text size="sm" c="dimmed" mb="md">
+          Data: CRA 2025 (ONS) &bull; Knife & Offensive Weapon Sentencing
+          (Ministry of Justice)
+        </Text>
 
-      <Paper mb="xl" p="md" withBorder radius="md">
-        <Title order={3} mb="md">
-          North East Counties — 2024 Knife Crime Rate
-        </Title>
-        <MapChart />
-      </Paper>
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl" mb="xl">
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              How Spending Compares
+            </Title>
+            <D3ComparisonChart />
+          </Paper>
 
-      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl">
-        <Paper p="md" withBorder radius="md">
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              Spending Per Person
+            </Title>
+            <PerCapitaComparison />
+          </Paper>
+        </SimpleGrid>
+
+        <Paper mb="xl" p="md" withBorder radius="md">
           <Title order={3} mb="md">
-            Crime Trend — NE vs England & Wales (2014-2024)
+            Spending Categories — North East vs London
           </Title>
-          <CrimeTrendChart />
+          <D3DonutChart />
         </Paper>
 
-        <Paper p="md" withBorder radius="md">
-          <Title order={3} mb="md">
-            Public Spending by Category (2020-25)
-          </Title>
-          <SpendCategoryChart />
-        </Paper>
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="xl">
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              Spending by Category (Top 6)
+            </Title>
+            <CategoryComparison />
+          </Paper>
 
-        <Paper p="md" withBorder radius="md">
-          <Title order={3} mb="md">
-            Justice Spend vs Crime Rate
-          </Title>
-          <JusticeVsCrimeChart />
-        </Paper>
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              Knife Crime Rate Comparison
+            </Title>
+            <CrimeComparison />
+          </Paper>
 
-        <Paper p="md" withBorder radius="md">
-          <Title order={3} mb="md">
-            Capital vs Current Spending
-          </Title>
-          <CapVsCurChart />
-        </Paper>
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              Capital vs Current Spending
+            </Title>
+            <CapVsCurComparison />
+          </Paper>
 
-        <Paper p="md" withBorder radius="md">
-          <Title order={3} mb="md">
-            Identifiable vs Non-Identifiable Spend
-          </Title>
-          <IdVsNonIdChart />
-        </Paper>
+          <Paper p="md" withBorder radius="md">
+            <Title order={3} mb="md">
+              Spending by Sector
+            </Title>
+            <SectorComparison />
+          </Paper>
+        </SimpleGrid>
 
-        <Paper p="md" withBorder radius="md">
-          <Title order={3} mb="md">
-            Spending by Sector
-          </Title>
-          <SectorChart />
-        </Paper>
-      </SimpleGrid>
-    </Container>
+        <Conclusion />
+
+        <Text size="xs" c="dimmed" ta="center" mt="xl">
+          Central Government Spending Database (CRA 2025) &bull; Office for
+          National Statistics &bull; Ministry of Justice Knife Crime Sentencing
+          Data
+        </Text>
+      </Container>
+    </MantineProvider>
   );
 }
 

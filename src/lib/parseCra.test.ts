@@ -1,43 +1,44 @@
 import { describe, expect, it } from 'vitest';
+import { LONDON_REGION, NE_REGION } from './constants';
 import { filterByRegion, parseCraCsv } from './parseCra';
 
-const sampleCsv = `Department Name,Organisation Name,CRA Segment Code,CRA Segment Name,COFOG Level 0,HMT Function,COFOG Level 1,HMT Subfunction,ID/non-ID,CAP or CUR,"CG, LG, PC, BOE, PSP",Allocated by HMT or DEPT,ITL Region,Country,2020-21,2021-22,2022-23,2023-24,2024-25
-Test Dept,Test Org,SEG001,Segment 1,3. Public order and safety,3. Public order and safety,3.1 Police,3.1 Police,ID,CAP,CG,DEPT,ENGLAND_North East,ENGLAND,"100,000","110,000","120,000","130,000","140,000"
-Test Dept,Test Org,SEG002,Segment 2,7. Health,7. Health,7.1 Medical,7.1 Medical,ID,CUR,LG,DEPT,ENGLAND_North East,ENGLAND,"50,000","55,000","60,000","65,000","70,000"
-Other Dept,Other Org,SEG003,Segment 3,9. Education,9. Education,9.1 Primary,9.1 Primary,ID,CUR,CG,DEPT,ENGLAND_London,ENGLAND,"200,000","210,000","220,000","230,000","240,000"`;
+const sampleCsv = `Department Name,Organisation Name,CRA Segment Code,CRA Segment Name,COFOG Level 0,HMT Function,COFOG Level 1,HMT Subfunction,ID/non-ID,CAP or CUR,"CG, LG, PC, BOE, PSP",Allocated by HMT or DEPT,ITL Region,Country,2024-25
+DHSC,NHS England,SEG001,SEG001,7. Health,7. Health,7.1 Medical services,7.1 Medical services,ID,CUR,CG,HMT,ENGLAND_North East,ENGLAND,"10,000"
+DHSC,NHS England,SEG002,SEG002,1. General public services,1. General public services,1.1 Executive services,1.1 Executive services,Non-ID,CAP,LG,DEPT,ENGLAND_London,ENGLAND,"5,000"
+MOJ,Court Service,SEG003,SEG003,3. Defence,3. Defence,3.1 General defence services,3.1 General defence services,ID,CUR,CG,HMT,ENGLAND_North East,ENGLAND,"2,500"`;
 
 describe('parseCraCsv', () => {
   it('parses CSV into typed CraRow objects', () => {
     const rows = parseCraCsv(sampleCsv);
     expect(rows).toHaveLength(3);
+    expect(rows[0]?.departmentName).toBe('DHSC');
   });
 
-  it('strips commas from expenditure values and converts to pounds', () => {
+  it('strips commas from spend values and multiplies by 1000', () => {
     const rows = parseCraCsv(sampleCsv);
-    const firstRow = rows[0];
-    expect(firstRow.spend2020_21).toBe(100_000_000);
-    expect(firstRow.spend2024_25).toBe(140_000_000);
+    expect(rows[0]?.spend2024_25).toBe(10_000_000);
   });
 
-  it('maps CSV columns to correct type properties', () => {
-    const rows = parseCraCsv(sampleCsv);
-    const firstRow = rows[0];
-    expect(firstRow.departmentName).toBe('Test Dept');
-    expect(firstRow.cofogLevel0).toBe('3. Public order and safety');
-    expect(firstRow.idNonId).toBe('ID');
-    expect(firstRow.capOrCur).toBe('CAP');
-    expect(firstRow.sector).toBe('CG');
-    expect(firstRow.itlRegion).toBe('ENGLAND_North East');
+  it('handles zero spend values', () => {
+    const csv = `Department Name,Organisation Name,CRA Segment Code,CRA Segment Name,COFOG Level 0,HMT Function,COFOG Level 1,HMT Subfunction,ID/non-ID,CAP or CUR,"CG, LG, PC, BOE, PSP",Allocated by HMT or DEPT,ITL Region,Country,2024-25
+Test,Test,TEST,TEST,1. General,1. General,1.1,1.1,ID,CUR,CG,HMT,ENGLAND_North East,ENGLAND,0`;
+    const rows = parseCraCsv(csv);
+    expect(rows[0]?.spend2024_25).toBe(0);
   });
 });
 
 describe('filterByRegion', () => {
-  it('filters rows to only include specified region', () => {
+  it('filters rows to North East region', () => {
     const rows = parseCraCsv(sampleCsv);
-    const filtered = filterByRegion(rows, 'ENGLAND_North East');
-    expect(filtered).toHaveLength(2);
-    expect(filtered.every((r) => r.itlRegion === 'ENGLAND_North East')).toBe(
-      true,
-    );
+    const neRows = filterByRegion(rows, NE_REGION);
+    expect(neRows).toHaveLength(2);
+    expect(neRows.every((r) => r.itlRegion === NE_REGION)).toBe(true);
+  });
+
+  it('filters rows to London region', () => {
+    const rows = parseCraCsv(sampleCsv);
+    const londonRows = filterByRegion(rows, LONDON_REGION);
+    expect(londonRows).toHaveLength(1);
+    expect(londonRows[0]?.spend2024_25).toBe(5_000_000);
   });
 });
