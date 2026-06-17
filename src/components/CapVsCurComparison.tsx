@@ -40,6 +40,7 @@ function CapVsCurComparison({ data: propData }: Props) {
         { name: 'Current', label: 'Current', color: 'green.6' },
       ]}
       tooltipAnimationDuration={200}
+      valueFormatter={(v: number) => `£${(v / 1_000_000_000).toFixed(1)}B`}
       withLegend
       yAxisProps={{
         tickFormatter: (v: number) => `£${(v / 1_000_000_000).toFixed(1)}B`,

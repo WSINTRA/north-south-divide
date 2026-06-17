@@ -55,18 +55,12 @@ function PerCapitaComparison({ data: propData }: Props) {
         data={chartData}
         dataKey="region"
         tooltipAnimationDuration={200}
+        valueFormatter={(v: number) => `£${v.toLocaleString()}`}
         series={[
           { name: 'perCapita', label: 'Per Person Spend', color: 'green.6' },
         ]}
         yAxisProps={{
           tickFormatter: (v: number) => `£${v.toLocaleString()}`,
-        }}
-        barProps={{
-          label: {
-            position: 'top',
-            fill: 'var(--mantine-color-dimmed)',
-            fontSize: 11,
-          },
         }}
       />
       <Text size="sm" c="dimmed" ta="center" mt="sm">

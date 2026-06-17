@@ -44,6 +44,7 @@ function CategoryComparison({ data: propData }: Props) {
         { name: 'london', label: 'London', color: 'blue.6' },
       ]}
       tooltipAnimationDuration={200}
+      valueFormatter={(v: number) => `£${(v / 1_000_000_000).toFixed(1)}B`}
       yAxisProps={{
         tickFormatter: (v: number) => `£${(v / 1_000_000_000).toFixed(1)}B`,
       }}

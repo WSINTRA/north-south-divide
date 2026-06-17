@@ -36,16 +36,9 @@ function CrimeComparison({ data: propData }: Props) {
         h={250}
         data={chartData}
         tooltipAnimationDuration={200}
+        valueFormatter={(v: number) => v.toFixed(0)}
         dataKey="region"
         series={[{ name: 'rate', label: 'Rate per 100k', color: 'yellow.6' }]}
-        barProps={{
-          label: {
-            position: 'top',
-            fill: 'var(--mantine-color-dimmed)',
-            fontSize: 12,
-            fontWeight: 700,
-          },
-        }}
       />
       <Group justify="center" gap="xl" mt="md" wrap="wrap">
         <Paper p="sm" withBorder style={{ flex: 1 }}>

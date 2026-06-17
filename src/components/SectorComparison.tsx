@@ -44,6 +44,7 @@ function SectorComparison({ data: propData }: Props) {
         h={300}
         data={chartData}
         tooltipAnimationDuration={200}
+        valueFormatter={(v: number) => `£${(v / 1_000_000_000).toFixed(1)}B`}
         dataKey="sector"
         type="default"
         series={[
