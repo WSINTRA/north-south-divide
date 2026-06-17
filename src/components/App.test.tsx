@@ -37,7 +37,7 @@ describe('App integration', () => {
 
   it('renders summary section', () => {
     render(wrapWithProvider(<App />));
-    expect(screen.getByText('How To Read This Dashboard')).toBeDefined();
+    expect(screen.getByText("What You're Looking At")).toBeDefined();
   });
 
   it('renders data source attribution', () => {

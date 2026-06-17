@@ -1,86 +1,91 @@
-import {
-  Badge,
-  Group,
-  List,
-  Paper,
-  Text,
-  ThemeIcon,
-  Title,
-} from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { Badge, Group, Paper, SimpleGrid, Text, Title } from '@mantine/core';
 
 function Summary() {
   return (
     <Paper p="lg" withBorder radius="md" mb="xl">
       <Title order={3} mb="md">
-        How To Read This Dashboard
+        What You're Looking At
       </Title>
       <Text size="sm" mb="md">
-        This dashboard compares two regions of England: the{' '}
-        <strong>North East</strong> (Northumbria, Cleveland, Durham police
-        areas) and <strong>London</strong> (Metropolitan Police, City of
-        London). All spending figures are for the 2024-25 financial year from
-        the Central Government Spending Database (CRA 2025). Knife crime figures
-        are for 2024 from the Ministry of Justice.
+        We're comparing how the UK government spends money in the{' '}
+        <strong>North East</strong> versus <strong>London</strong> — and what
+        that means for knife crime. All spending data is from 2024-25, crime
+        data from 2024.
       </Text>
 
       <Group gap="md" mb="md">
         <Badge color="red" variant="light">
-          Red bars = North East
+          North East
         </Badge>
         <Badge color="blue" variant="light">
-          Blue bars = London
+          London
         </Badge>
       </Group>
 
-      <List
-        spacing="xs"
-        size="sm"
-        icon={
-          <ThemeIcon color="blue" size={20} radius="xl">
-            <IconInfoCircle size={14} />
-          </ThemeIcon>
-        }
-      >
-        <List.Item>
-          <strong>How Spending Compares:</strong> Animated horizontal bar chart
-          comparing four key metrics: Total Spend, Per Person, Justice per
-          Person, and Knife Crime Rate between the two regions.
-        </List.Item>
-        <List.Item>
-          <strong>Spending Per Person:</strong> Stat cards and bar chart showing
-          total spending divided by population — the fairest way to compare
-          regions of different sizes.
-        </List.Item>
-        <List.Item>
-          <strong>Spending Categories (Donut):</strong> Two donut charts showing
-          the top 7 COFOG spending categories (Health, Education, Defence, etc.)
-          for each region with percentage labels.
-        </List.Item>
-        <List.Item>
-          <strong>Spending by Category (Top 6):</strong> Grouped bar chart
-          comparing the top 6 spending categories side by side.
-        </List.Item>
-        <List.Item>
-          <strong>Knife Crime Rate Comparison:</strong> Bar chart and stat cards
-          showing knife crime offences per 100,000 people for each region.
-        </List.Item>
-        <List.Item>
-          <strong>Capital vs Current Spending:</strong> Stacked bar chart
-          breaking down spending into Capital (long-term assets) and Current
-          (day-to-day services).
-        </List.Item>
-        <List.Item>
-          <strong>Spending by Sector:</strong> Grouped bar chart showing whether
-          spending comes from Central Government (CG), Local Government (LG), or
-          Public Corporations (PC).
-        </List.Item>
-        <List.Item>
-          <strong>Key Findings:</strong> Summary cards at the bottom
-          highlighting the spending gap, crime disparity, and justice spending
-          ratio between the two regions.
-        </List.Item>
-      </List>
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            💰 How Spending Compares
+          </Text>
+          <Text size="sm" c="dimmed">
+            Four key numbers side by side: total spend, per person, justice
+            funding, and crime rates.
+          </Text>
+        </Paper>
+
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            📊 Spending Per Person
+          </Text>
+          <Text size="sm" c="dimmed">
+            The fairest comparison — total spending divided by population.
+          </Text>
+        </Paper>
+
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            🍩 Where The Money Goes
+          </Text>
+          <Text size="sm" c="dimmed">
+            Donut charts showing the top spending categories — health,
+            education, defence, and more.
+          </Text>
+        </Paper>
+
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            🔪 Knife Crime Rates
+          </Text>
+          <Text size="sm" c="dimmed">
+            Offences per 100,000 people — the standard way to compare crime
+            across regions.
+          </Text>
+        </Paper>
+
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            🏗️ Capital vs Current
+          </Text>
+          <Text size="sm" c="dimmed">
+            Long-term investments (buildings, infrastructure) versus day-to-day
+            running costs.
+          </Text>
+        </Paper>
+
+        <Paper p="md" withBorder radius="sm">
+          <Text size="sm" fw={600} mb="xs">
+            🏛️ Who's Spending
+          </Text>
+          <Text size="sm" c="dimmed">
+            Central government, local councils, or public corporations — where
+            the money comes from.
+          </Text>
+        </Paper>
+      </SimpleGrid>
+
+      <Text size="sm" c="dimmed" ta="center" mt="md">
+        Scroll down to see the <strong>Key Findings</strong> at the bottom.
+      </Text>
     </Paper>
   );
 }

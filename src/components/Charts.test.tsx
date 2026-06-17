@@ -86,16 +86,25 @@ describe('D3DonutChart', () => {
     expect(svg).toBeDefined();
   });
 
-  it('renders arc paths', () => {
+  it('renders donut charts', () => {
     const { container } = render(wrap(<D3DonutChart data={dashboardData} />));
-    const paths = container.querySelectorAll('path');
-    expect(paths.length).toBeGreaterThanOrEqual(4);
+    const donutContainers = container.querySelectorAll(
+      '.mantine-DonutChart-root',
+    );
+    expect(donutContainers.length).toBe(2);
   });
 
   it('shows NE and London labels', () => {
     render(wrap(<D3DonutChart data={dashboardData} />));
     expect(screen.getByText('North East')).toBeDefined();
     expect(screen.getByText('London')).toBeDefined();
+  });
+
+  it('shows category legend', () => {
+    render(wrap(<D3DonutChart data={dashboardData} />));
+    for (const cat of dashboardData.ne.spend.byCategory.slice(0, 7)) {
+      expect(screen.getByText(cat.category)).toBeDefined();
+    }
   });
 });
 
